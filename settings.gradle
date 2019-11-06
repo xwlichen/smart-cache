@@ -1,0 +1,2 @@
+include ':app', ':cache'
+rootProject.name='smart-cache'
