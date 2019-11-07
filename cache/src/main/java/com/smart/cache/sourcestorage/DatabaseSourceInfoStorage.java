@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.smart.cache.SourceInfo;
 
+import static com.smart.cache.Preconditions.checkAllNotNull;
+import static com.smart.cache.Preconditions.checkNotNull;
+
 
 /**
  * Database based {@link SourceInfoStorage}.

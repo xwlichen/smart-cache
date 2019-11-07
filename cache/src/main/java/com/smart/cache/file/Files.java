@@ -1,6 +1,7 @@
 package com.smart.cache.file;
 
 
+import com.smart.utils.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +12,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
+
+import static com.smart.cache.Constants.LOG_TAG;
 
 /**
  * Utils for work with files.
@@ -20,7 +22,6 @@ import java.util.logging.Logger;
  */
 class Files {
 
-    private static final Logger LOG = LoggerFactory.getLogger("Files");
 
     static void makeDir(File directory) throws IOException {
         if (directory.exists()) {
@@ -53,7 +54,7 @@ class Files {
                 modify(file);
                 if (file.lastModified() < now) {
                     // NOTE: apparently this is a known issue (see: http://stackoverflow.com/questions/6633748/file-lastmodified-is-never-what-was-set-with-file-setlastmodified)
-                    LOG.warn("Last modified date {} is not set for file {}", new Date(file.lastModified()), file.getAbsolutePath());
+                    LogUtils.w(LOG_TAG, "Last modified date {" + new Date(file.lastModified()) + "} is not set for file {" + file.getAbsolutePath() + "}");
                 }
             }
         }

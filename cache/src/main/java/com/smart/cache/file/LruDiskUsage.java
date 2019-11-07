@@ -2,6 +2,8 @@ package com.smart.cache.file;
 
 
 
+import com.smart.utils.LogUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -17,7 +19,6 @@ import java.util.logging.Logger;
  */
 public abstract class LruDiskUsage implements DiskUsage {
 
-    private static final Logger LOG = LoggerFactory.getLogger("LruDiskUsage");
     private final ExecutorService workerThread = Executors.newSingleThreadExecutor();
 
     @Override
@@ -44,9 +45,9 @@ public abstract class LruDiskUsage implements DiskUsage {
                 if (deleted) {
                     totalCount--;
                     totalSize -= fileSize;
-                    LOG.info("Cache file " + file + " is deleted because it exceeds cache limit");
+                    LogUtils.i("Cache file " + file.getName() + " is deleted because it exceeds cache limit");
                 } else {
-                    LOG.error("Error deleting file " + file + " for trimming cache");
+                    LogUtils.e("Error deleting file " + file.getName() + " for trimming cache");
                 }
             }
         }

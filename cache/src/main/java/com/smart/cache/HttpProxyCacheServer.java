@@ -53,7 +53,6 @@ import static com.smart.cache.Preconditions.checkNotNull;
  */
 public class HttpProxyCacheServer {
 
-    private static final Logger LOG = LoggerFactory.getLogger("HttpProxyCacheServer");
     private static final String PROXY_HOST = "127.0.0.1";
 
     private final Object clientsLock = new Object();
@@ -81,7 +80,7 @@ public class HttpProxyCacheServer {
             this.waitConnectionThread.start();
             startSignal.await(); // freeze thread, wait for server starts
             this.pinger = new Pinger(PROXY_HOST, port);
-            LOG.info("Proxy cache server started. Is it alive? " + isAlive());
+//            LOG.info("Proxy cache server started. Is it alive? " + isAlive());
         } catch (IOException | InterruptedException e) {
             socketProcessor.shutdown();
             throw new IllegalStateException("Error starting local proxy server", e);
