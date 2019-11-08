@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-import com.danikula.videocache.file.FileCache;
 import com.smart.cache.file.FileCache;
 
 import java.io.File;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.danikula.videocache.Preconditions.checkNotNull;
 import static com.smart.cache.Preconditions.checkNotNull;
 
 /**

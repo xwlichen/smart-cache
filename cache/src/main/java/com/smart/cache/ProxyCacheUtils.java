@@ -4,6 +4,8 @@ import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 
+import com.smart.utils.LogUtils;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
+import static com.smart.cache.Constants.LOG_TAG;
 import static com.smart.cache.Preconditions.checkArgument;
 import static com.smart.cache.Preconditions.checkNotNull;
 
@@ -25,7 +28,6 @@ import static com.smart.cache.Preconditions.checkNotNull;
  */
 public class ProxyCacheUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger("ProxyCacheUtils");
     static final int DEFAULT_BUFFER_SIZE = 8 * 1024;
     static final int MAX_ARRAY_PREVIEW = 16;
 
@@ -72,7 +74,7 @@ public class ProxyCacheUtils {
             try {
                 closeable.close();
             } catch (IOException e) {
-                LOG.error("Error closing resource", e);
+                LogUtils.e(LOG_TAG,"Error closing resource:"+ e.getMessage());
             }
         }
     }

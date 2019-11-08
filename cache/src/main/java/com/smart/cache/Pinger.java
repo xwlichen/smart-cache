@@ -1,6 +1,8 @@
 package com.smart.cache;
 
 
+import com.smart.utils.LogUtils;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Proxy;
@@ -17,8 +19,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Logger;
 
+import static com.smart.cache.Constants.LOG_TAG;
 import static com.smart.cache.Preconditions.checkArgument;
 import static com.smart.cache.Preconditions.checkNotNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -31,7 +33,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 class Pinger {
 
-    private static final Logger LOG = LoggerFactory.getLogger("Pinger");
     private static final String PING_REQUEST = "ping";
     private static final String PING_RESPONSE = "ping ok";
 
@@ -58,9 +59,9 @@ class Pinger {
                     return true;
                 }
             } catch (TimeoutException e) {
-                LOG.warn("Error pinging server (attempt: " + attempts + ", timeout: " + timeout + "). ");
+                LogUtils.w(LOG_TAG, "Error pinging server (attempt: " + attempts + ", timeout: " + timeout + "). ");
             } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Error pinging server due to unexpected error", e);
+                LogUtils.e(LOG_TAG, "Error pinging server due to unexpected error:" + e.getMessage());
             }
             attempts++;
             timeout *= 2;
@@ -69,7 +70,8 @@ class Pinger {
                         "If you see this message, please, report at https://github.com/danikula/AndroidVideoCache/issues/134. " +
                         "Default proxies are: %s"
                 , attempts, timeout / 2, getDefaultProxies());
-        LOG.error(error, new ProxyCacheException(error));
+        LogUtils.e(LOG_TAG, error + "\n" +
+                "" + new ProxyCacheException(error).getMessage());
         return false;
     }
 
@@ -101,10 +103,10 @@ class Pinger {
             byte[] response = new byte[expectedResponse.length];
             source.read(response);
             boolean pingOk = Arrays.equals(expectedResponse, response);
-            LOG.info("Ping response: `" + new String(response) + "`, pinged? " + pingOk);
+            LogUtils.i(LOG_TAG, "Ping response: `" + new String(response) + "`, pinged? " + pingOk);
             return pingOk;
         } catch (ProxyCacheException e) {
-            LOG.error("Error reading ping response", e);
+            LogUtils.e(LOG_TAG, "Error reading ping response :" + e.getMessage());
             return false;
         } finally {
             source.close();

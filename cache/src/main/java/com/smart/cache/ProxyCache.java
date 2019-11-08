@@ -1,9 +1,12 @@
 package com.smart.cache;
 
 
+import com.smart.utils.LogUtils;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
+import static com.smart.cache.Constants.LOG_TAG;
 import static com.smart.cache.Preconditions.checkNotNull;
 
 
@@ -18,7 +21,6 @@ import static com.smart.cache.Preconditions.checkNotNull;
  */
 class ProxyCache {
 
-    private static final Logger LOG = LoggerFactory.getLogger("ProxyCache");
     private static final int MAX_READ_SOURCE_ATTEMPTS = 1;
 
     private final Source source;
@@ -62,7 +64,7 @@ class ProxyCache {
 
     public void shutdown() {
         synchronized (stopLock) {
-            LOG.debug("Shutdown proxy for " + source);
+            LogUtils.d(LOG_TAG,"Shutdown proxy for " + source.toString());
             try {
                 stopped = true;
                 if (sourceReaderThread != null) {
@@ -174,9 +176,9 @@ class ProxyCache {
     protected final void onError(final Throwable e) {
         boolean interruption = e instanceof InterruptedProxyCacheException;
         if (interruption) {
-            LOG.debug("ProxyCache is interrupted");
+            LogUtils.d(LOG_TAG,"ProxyCache is interrupted");
         } else {
-            LOG.error("ProxyCache error", e);
+            LogUtils.e(LOG_TAG,"ProxyCache error:"+e.getMessage());
         }
     }
 

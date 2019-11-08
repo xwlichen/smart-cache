@@ -2,11 +2,11 @@ package com.smart.cache;
 
 import android.text.TextUtils;
 
-
 import com.smart.cache.headers.EmptyHeadersInjector;
 import com.smart.cache.headers.HeaderInjector;
 import com.smart.cache.sourcestorage.SourceInfoStorage;
 import com.smart.cache.sourcestorage.SourceInfoStorageFactory;
+import com.smart.utils.LogUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -15,8 +15,8 @@ import java.io.InterruptedIOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import static com.smart.cache.Constants.LOG_TAG;
 import static com.smart.cache.Preconditions.checkNotNull;
 import static com.smart.cache.ProxyCacheUtils.DEFAULT_BUFFER_SIZE;
 import static java.net.HttpURLConnection.HTTP_MOVED_PERM;
@@ -32,7 +32,6 @@ import static java.net.HttpURLConnection.HTTP_SEE_OTHER;
  */
 public class HttpUrlSource implements Source {
 
-    private static final Logger LOG = LoggerFactory.getLogger("HttpUrlSource");
 
     private static final int MAX_REDIRECTS = 5;
     private final SourceInfoStorage sourceInfoStorage;
@@ -108,9 +107,9 @@ public class HttpUrlSource implements Source {
                         "https://github.com/danikula/AndroidVideoCache/issues.";
                 throw new RuntimeException(message, e);
             } catch (ArrayIndexOutOfBoundsException e) {
-                LOG.error("Error closing connection correctly. Should happen only on Android L. " +
+                LogUtils.e(LOG_TAG, "Error closing connection correctly. Should happen only on Android L. " +
                         "If anybody know how to fix it, please visit https://github.com/danikula/AndroidVideoCache/issues/88. " +
-                        "Until good solution is not know, just ignore this issue :(", e);
+                        "Until good solution is not know, just ignore this issue :(" + e.getMessage());
             }
         }
     }
@@ -130,7 +129,7 @@ public class HttpUrlSource implements Source {
     }
 
     private void fetchContentInfo() throws ProxyCacheException {
-        LOG.debug("Read content info from " + sourceInfo.url);
+        LogUtils.d(LOG_TAG, "Read content info from " + sourceInfo.url);
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         try {
@@ -140,9 +139,9 @@ public class HttpUrlSource implements Source {
             inputStream = urlConnection.getInputStream();
             this.sourceInfo = new SourceInfo(sourceInfo.url, length, mime);
             this.sourceInfoStorage.put(sourceInfo.url, sourceInfo);
-            LOG.debug("Source info fetched: " + sourceInfo);
+            LogUtils.d(LOG_TAG, "Source info fetched: " + sourceInfo.toString());
         } catch (IOException e) {
-            LOG.error("Error fetching info from " + sourceInfo.url, e);
+            LogUtils.e(LOG_TAG, "Error fetching info from " + sourceInfo.url + "error:" + e.getMessage());
         } finally {
             ProxyCacheUtils.close(inputStream);
             if (urlConnection != null) {
@@ -157,7 +156,7 @@ public class HttpUrlSource implements Source {
         int redirectCount = 0;
         String url = this.sourceInfo.url;
         do {
-            LOG.debug("Open connection " + (offset > 0 ? " with offset " + offset : "") + " to " + url);
+            LogUtils.d(LOG_TAG,"Open connection " + (offset > 0 ? " with offset " + offset : "") + " to " + url);
             connection = (HttpURLConnection) new URL(url).openConnection();
             injectCustomHeaders(connection, url);
             if (offset > 0) {

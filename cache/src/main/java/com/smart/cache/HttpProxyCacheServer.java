@@ -3,7 +3,6 @@ package com.smart.cache;
 import android.content.Context;
 import android.net.Uri;
 
-
 import com.smart.cache.file.DiskUsage;
 import com.smart.cache.file.FileNameGenerator;
 import com.smart.cache.file.Md5FileNameGenerator;
@@ -13,6 +12,7 @@ import com.smart.cache.headers.EmptyHeadersInjector;
 import com.smart.cache.headers.HeaderInjector;
 import com.smart.cache.sourcestorage.SourceInfoStorage;
 import com.smart.cache.sourcestorage.SourceInfoStorageFactory;
+import com.smart.utils.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
+import static com.smart.cache.Constants.LOG_TAG;
 import static com.smart.cache.Preconditions.checkAllNotNull;
 import static com.smart.cache.Preconditions.checkNotNull;
 
@@ -127,7 +127,7 @@ public class HttpProxyCacheServer {
             try {
                 getClients(url).registerCacheListener(cacheListener);
             } catch (ProxyCacheException e) {
-                LOG.warn("Error registering cache listener", e);
+                LogUtils.e(LOG_TAG, "Error registering cache listener:" + e.getMessage());
             }
         }
     }
@@ -138,7 +138,7 @@ public class HttpProxyCacheServer {
             try {
                 getClients(url).unregisterCacheListener(cacheListener);
             } catch (ProxyCacheException e) {
-                LOG.warn("Error registering cache listener", e);
+                LogUtils.e(LOG_TAG, "Error registering cache listener:" + e.getMessage());
             }
         }
     }
@@ -164,7 +164,7 @@ public class HttpProxyCacheServer {
     }
 
     public void shutdown() {
-        LOG.info("Shutdown proxy server");
+        LogUtils.i(LOG_TAG, "Shutdown proxy server");
 
         shutdownClients();
 
@@ -198,7 +198,7 @@ public class HttpProxyCacheServer {
         try {
             config.diskUsage.touch(cacheFile);
         } catch (IOException e) {
-            LOG.error("Error touching file " + cacheFile, e);
+            LogUtils.e(LOG_TAG, "Error touching file: " + cacheFile.getAbsolutePath() + "error:" + e.getMessage());
         }
     }
 
@@ -215,7 +215,7 @@ public class HttpProxyCacheServer {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 Socket socket = serverSocket.accept();
-                LOG.debug("Accept new socket " + socket);
+                LogUtils.d(LOG_TAG, "Accept new socket: " + socket.getInetAddress());
                 socketProcessor.submit(new SocketProcessorRunnable(socket));
             }
         } catch (IOException e) {
@@ -226,7 +226,7 @@ public class HttpProxyCacheServer {
     private void processSocket(Socket socket) {
         try {
             GetRequest request = GetRequest.read(socket.getInputStream());
-            LOG.debug("Request to cache proxy:" + request);
+            LogUtils.d(LOG_TAG, "Request to cache proxy:" + request.uri);
             String url = ProxyCacheUtils.decode(request.uri);
             if (pinger.isPingRequest(url)) {
                 pinger.responseToPing(socket);
@@ -237,12 +237,12 @@ public class HttpProxyCacheServer {
         } catch (SocketException e) {
             // There is no way to determine that client closed connection http://stackoverflow.com/a/10241044/999458
             // So just to prevent log flooding don't log stacktrace
-            LOG.debug("Closing socket… Socket is closed by client.");
+            LogUtils.d(LOG_TAG, "Closing socket… Socket is closed by client.");
         } catch (ProxyCacheException | IOException e) {
             onError(new ProxyCacheException("Error processing request", e));
         } finally {
             releaseSocket(socket);
-            LOG.debug("Opened connections: " + getClientsCount());
+            LogUtils.d(LOG_TAG, "Opened connections: " + getClientsCount());
         }
     }
 
@@ -281,7 +281,7 @@ public class HttpProxyCacheServer {
         } catch (SocketException e) {
             // There is no way to determine that client closed connection http://stackoverflow.com/a/10241044/999458
             // So just to prevent log flooding don't log stacktrace
-            LOG.debug("Releasing input stream… Socket is closed by client.");
+            LogUtils.d(LOG_TAG, "Releasing input stream… Socket is closed by client.");
         } catch (IOException e) {
             onError(new ProxyCacheException("Error closing socket input stream", e));
         }
@@ -293,7 +293,7 @@ public class HttpProxyCacheServer {
                 socket.shutdownOutput();
             }
         } catch (IOException e) {
-            LOG.warn("Failed to close socket on proxy side: {}. It seems client have already closed connection.", e.getMessage());
+            LogUtils.w(LOG_TAG, "Failed to close socket on proxy side: {}. It seems client have already closed connection error:" + e.getMessage());
         }
     }
 
@@ -308,7 +308,7 @@ public class HttpProxyCacheServer {
     }
 
     private void onError(Throwable e) {
-        LOG.error("HttpProxyCacheServer error", e);
+        LogUtils.e(LOG_TAG, "HttpProxyCacheServer error:" + e.getMessage());
     }
 
     private final class WaitRequestsRunnable implements Runnable {

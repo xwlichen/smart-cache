@@ -4,10 +4,13 @@ import android.content.Context;
 import android.os.Environment;
 
 
+import com.smart.utils.LogUtils;
+
 import java.io.File;
 import java.util.logging.Logger;
 
 import static android.os.Environment.MEDIA_MOUNTED;
+import static com.smart.cache.Constants.LOG_TAG;
 
 /**
  * Provides application storage paths
@@ -19,7 +22,6 @@ import static android.os.Environment.MEDIA_MOUNTED;
  */
 final class StorageUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger("StorageUtils");
     private static final String INDIVIDUAL_DIR_NAME = "video-cache";
 
     /**
@@ -62,7 +64,7 @@ final class StorageUtils {
         }
         if (appCacheDir == null) {
             String cacheDirPath = "/data/data/" + context.getPackageName() + "/cache/";
-            LOG.warn("Can't define system cache directory! '" + cacheDirPath + "%s' will be used.");
+            LogUtils.w(LOG_TAG,"Can't define system cache directory! '" + cacheDirPath + "%s' will be used.");
             appCacheDir = new File(cacheDirPath);
         }
         return appCacheDir;
@@ -73,7 +75,7 @@ final class StorageUtils {
         File appCacheDir = new File(new File(dataDir, context.getPackageName()), "cache");
         if (!appCacheDir.exists()) {
             if (!appCacheDir.mkdirs()) {
-                LOG.warn("Unable to create external cache directory");
+                LogUtils.w(LOG_TAG,"Unable to create external cache directory");
                 return null;
             }
         }
