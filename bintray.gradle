@@ -1,0 +1,15 @@
+apply plugin: 'com.novoda.bintray-release'
+
+android {
+    lintOptions {
+        abortOnError false
+    }
+}
+
+publish {
+    userOrg = 'smartlibs'      // maven 的组织名
+    groupId = 'com.samrt.componet' //包名
+    artifactId = 'smart-cache'// bintray创建的package
+    desc = 'android video cache'
+    publishVersion = '1.0.0'
+}
