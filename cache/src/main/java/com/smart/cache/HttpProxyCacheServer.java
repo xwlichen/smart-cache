@@ -215,7 +215,8 @@ public class HttpProxyCacheServer {
 
     private void waitForRequest() {
         try {
-            while (!Thread.currentThread().isInterrupted()) {
+            while (!Thread.currentThread().isInterrupted()) { //不断接受request
+                //socket 对应的请求 http://127.0.0.1:port/[md5加密后的url]     [md5加密后的url]相当于带的参数
                 Socket socket = serverSocket.accept();
                 LogUtils.d(LOG_TAG, "Accept new socket: " + socket.getInetAddress());
                 socketProcessor.submit(new SocketProcessorRunnable(socket));
@@ -229,6 +230,8 @@ public class HttpProxyCacheServer {
         try {
             GetRequest request = GetRequest.read(socket.getInputStream());
             LogUtils.d(LOG_TAG, "Request to cache proxy:" + request.uri);
+            //对[md5加密后的url] 解密成[实际访问的url]
+            // http://127.0.0.1:port/[实际访问的url]
             String url = ProxyCacheUtils.decode(request.uri);
             if (pinger.isPingRequest(url)) {
                 pinger.responseToPing(socket);

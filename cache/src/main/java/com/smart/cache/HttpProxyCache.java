@@ -41,7 +41,7 @@ class HttpProxyCache extends ProxyCache {
         OutputStream out = new BufferedOutputStream(socket.getOutputStream());
         String responseHeaders = newResponseHeaders(request);
         out.write(responseHeaders.getBytes("UTF-8"));
-
+        //返回数据给request
         long offset = request.rangeOffset;
         if (isUseCache(request)) {
             responseWithCache(out, offset);
