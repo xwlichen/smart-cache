@@ -72,8 +72,10 @@ public class HttpProxyCacheServer {
         this.config = checkNotNull(config);
         try {
             InetAddress inetAddress = InetAddress.getByName(PROXY_HOST);
+            //通过localhost生成一个ServerSocket,localPort传0的话系统会随机分配一个端口号
             this.serverSocket = new ServerSocket(0, 8, inetAddress);
             this.port = serverSocket.getLocalPort();
+            //将localhost添加到IgnoreHostProxySelector
             IgnoreHostProxySelector.install(PROXY_HOST, port);
             CountDownLatch startSignal = new CountDownLatch(1);
             this.waitConnectionThread = new Thread(new WaitRequestsRunnable(startSignal));
