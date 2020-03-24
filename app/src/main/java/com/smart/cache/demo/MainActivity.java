@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements CacheListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         videoView = findViewById(R.id.videoView);
+//        url = "https://cdn.changguwen.com/cms/media/2019923/4ef9cdfb-7867-40e8-8d9b-c41242d60cce-1569231281741-mcd.m3u8";
 
         checkCachedState();
         startVideo();

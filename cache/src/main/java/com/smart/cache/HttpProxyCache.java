@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 
 import com.smart.cache.file.FileCache;
+import com.smart.utils.LogUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Locale;
 
+import static com.smart.cache.Constants.LOG_TAG;
 import static com.smart.cache.ProxyCacheUtils.DEFAULT_BUFFER_SIZE;
 
 
@@ -40,6 +42,9 @@ class HttpProxyCache extends ProxyCache {
     public void processRequest(GetRequest request, Socket socket) throws IOException, ProxyCacheException {
         OutputStream out = new BufferedOutputStream(socket.getOutputStream());
         String responseHeaders = newResponseHeaders(request);
+        LogUtils.d("xw", "responseHeaders:" + responseHeaders);
+        LogUtils.d("xw", "request.rangeOffset:" + request.rangeOffset);
+
         out.write(responseHeaders.getBytes("UTF-8"));
         //返回数据给request
         long offset = request.rangeOffset;
